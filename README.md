@@ -17,8 +17,8 @@ This repository contains:
 For each UPLC method (AM-I … AM-VI), a dedicated RT predictor is trained under a fixed chromatographic context (method-specific modeling). The repo includes:
 
 - Raw RT datasets (`datas/0.data/*.csv`)
-- Processed feature tables with descriptors + fingerprints (`datas/1.processed_results/*`)
-- Train/test split tables for major datasets (`datas/2.train_test_split/*`)
+- Processed feature tables with descriptors + fingerprints (`datas/processed_results/*`)
+- Train/test split tables for major datasets (`datas/1-train_test_split/*`)
 - Traditional ML (SVR / LightGBM / XGBoost / RF) notebooks + trained artifacts (`ml/`)
 - Optional deep learning baselines (GIN, ChemBERTa-style) (`gnn_bert/`)
 
