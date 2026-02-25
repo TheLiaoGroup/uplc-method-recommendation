@@ -4,7 +4,7 @@ A research codebase for the manuscript **“An Intelligent Data-Driven Framework
 
 This repository contains:
 
-- **Method-aware retention time (RT) prediction** models for **7 UPLC methods (AM-I … AM-VII)**.
+- **Method-aware retention time (RT) prediction** models for **6 UPLC methods (AM-I … AM-VI)**.
 - A **reaction-level scoring** layer that converts predicted RTs of *all reaction components* into **UPLC method recommendations** under retention-range and peak-separation constraints.
 - Reproducible notebooks/scripts for feature generation, data splitting, model training/evaluation, similarity analysis, and an API-style demo service.
 
@@ -14,7 +14,7 @@ This repository contains:
 
 ### RT prediction (molecule-level, method-aware)
 
-For each UPLC method (AM-I … AM-VII), a dedicated RT predictor is trained under a fixed chromatographic context (method-specific modeling). The repo includes:
+For each UPLC method (AM-I … AM-VI), a dedicated RT predictor is trained under a fixed chromatographic context (method-specific modeling). The repo includes:
 
 - Raw RT datasets (`datas/0.data/*.csv`)
 - Processed feature tables with descriptors + fingerprints (`datas/1.processed_results/*`)
@@ -28,7 +28,7 @@ Given a reaction system (≥2 components, ordered by importance, e.g., **P > sub
 
 1) predict each component’s RT under each UPLC method
 2) score each method using:
-   - **Retention range feasibility** (default [30,120] s; AM-III/AM-IV use [30,150] s)
+   - **Retention range feasibility** (default [30,120] s; AM-III/AM-IV use [30,150] s; AM-V use [30,210] s)
    - **Pairwise separation threshold** (ΔRTmin = 10 s)
    - importance-weighted penalties + (optional) veto logic  
 
@@ -77,7 +77,7 @@ Minimal schema:
 
 - `SMILES`: canonical/standardized smiles
 - `UV_RT-s`: retention time in seconds
-- `Method`: one of `AM-I ... AM-VII`
+- `Method`: one of `AM-I ... AM-VI`
 
 ### Processed feature tables (`datas/1.processed_results/*-filtered.csv`)
 
