@@ -42,29 +42,31 @@ The output is a ranked list of candidate UPLC methods + a visualization comparin
 .
 ├── datas/
 │   ├── 0.data/                 # raw RT datasets (AM-I ... AM-VII)
-│   ├── 1.processed_results/    # descriptor + FG + MorganFP features
-│   └── 2.train_test_split/     # train/test split with PCA/UMAP clusters (for large sets)
+│   ├── processed_results/    # descriptor + FG + MorganFP features
+│   └── 1-train_test_split/     # train/test split with PCA/UMAP clusters (for large sets)
 │
 ├── ml/
-│   ├── 1.feature.ipynb         # feature generation (descriptors + FG bits + MorganFP)
-│   ├── 2.clustering.ipynb      # PCA/UMAP clustering for split
-│   ├── 3.data-split.ipynb      # cluster-aware train/test split (major datasets)
-│   ├── 4.space-comparison...   # chemical space comparison
-│   ├── 5.svr.ipynb / 5.lgb.ipynb / 5.xgb.ipynb / 5.RF.ipynb
-│   ├── 5.lgb-TL.ipynb          # transfer learning exploration (tabular)
-│   ├── 6.similarity-analysis.ipynb
-│   ├── 7.Method-for-seperation.py  # FastAPI demo: predict + score + plot
+│   ├── 1-0-feature.ipynb         # feature generation (descriptors + FG bits + MorganFP)
+│   ├── 1-1-PCA-comparison        # chemical space comparison
+│   ├── 1-2-clustering.ipynb      # PCA/UMAP clustering for split
+│   ├── 1-3-data-split.ipynb      # cluster-aware train/test split (major datasets)
+│   ├── 2-svr.ipynb / 2-lgb.ipynb / 2-xgb.ipynb / 2-RF.ipynb
+│   ├── 2-lgb-TL.ipynb          # transfer learning exploration (tabular)
+│   ├── 3-shapanalysis.ipynb
+│   ├── 3-similarity-analysis.ipynb
+│   ├── 4-Exp-validation.ipynb  # score for both experiments and recommendation
+│   ├── 4-Method-recommendation.ipynb  # predict + score + plot
 │   ├── processed_results/      # (mirror) processed tables
-│   ├── train_test_split/       # (mirror) split tables
-│   ├── svr-models/             # trained SVR artifacts (AM-I/II/III)
-│   ├── lgb-models/             # trained LightGBM artifacts
-│   └── svr-model-other4/       # nested-CV SVR artifacts (AM-IV/V/VI/VII)
+│   ├── 1-train_test_split/       # (mirror) split tables
+│   ├── 2-svr-models/             # trained SVR artifacts (AM-I/II/III)
+│   ├── 2-lgb-models/             # trained LightGBM artifacts
+│   └── 2-svr-model-other4/       # nested-CV SVR artifacts (AM-IV/V/VI/VII)
 │
 ├── gnn_bert/
 │   └── src/                    # GNN/BERT RT prediction (optional, requires torch-geometric)
 │
 └── results/
-    └── GIN-AM-I / GIN-AM-II / GIN-AM-III  # example deep learning outputs
+    └── GIN-AM-I / GIN-AM-II     # example deep learning outputs
 ```
 
 ---
@@ -79,7 +81,7 @@ Minimal schema:
 - `UV_RT-s`: retention time in seconds
 - `Method`: one of `AM-I ... AM-VI`
 
-### Processed feature tables (`datas/1.processed_results/*-filtered.csv`)
+### Processed feature tables (`datas/processed_results/*-filtered.csv`)
 
 Includes:
 
@@ -87,7 +89,7 @@ Includes:
 - 823 functional-group (SMARTS) bits: `col0 ... col822`
 - 1024-bit Morgan fingerprint: `fp_0 ... fp_1023`
 
-### Split tables (`datas/2.train_test_split/*_train.csv` / `*_test.csv`)
+### Split tables (`datas/1-train_test_split/*_train.csv` / `*_test.csv`)
 
 Same as processed tables, plus:
 
@@ -167,10 +169,10 @@ Expected response includes:
 
 Open notebooks under `ml/` in order:
 
-1) `1.feature.ipynb` → generate processed feature tables  
-2) `2.clustering.ipynb` + `3.data-split.ipynb` → cluster-aware split  
-3) `5.svr.ipynb`, `5.lgb.ipynb`, `5.xgb.ipynb`, `5.RF.ipynb` → model training/eval  
-4) `6.similarity-analysis.ipynb` → similarity-stratified evaluation
+1) `1-0-feature.ipynb` → generate processed feature tables  
+2) `1-2-clustering.ipynb` + `1-3-data-split.ipynb` → cluster-aware split  
+3) `2-svr.ipynb`, `2-lgb.ipynb`, `2-xgb.ipynb`, `2-RF.ipynb` → model training/eval  
+4) `3-similarity-analysis.ipynb` → similarity-stratified evaluation
 
 ---
 
@@ -178,7 +180,7 @@ Open notebooks under `ml/` in order:
 
 Current implementation uses:
 
-- retention range: **[30,120] s** for AM-I/II/V/VI/VII; **[30,150] s** for AM-III/IV  
+- retention range: **[30,120] s** for AM-I/II/V/VI; **[30,150] s** for AM-III/IV; **[30,210] s** for AM-V  
 - minimum separation: **ΔRTmin = 10 s**
 
 ---
