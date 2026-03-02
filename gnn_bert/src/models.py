@@ -12,8 +12,6 @@ from torch_geometric.nn import (
 from transformers import AutoModel
 
 
-
-
 class GNNModel(nn.Module):
     def __init__(
         self,
@@ -95,13 +93,9 @@ class BERTModel(nn.Module):
     """
 
     def __init__(
-        self,
-        bert_dir,
-        phys_dim=0,
-        hidden_dim=256,
-        dropout=0.5,
-        freeze_bert=False,
-    ):
+        self, bert_dir, phys_dim=0, hidden_dim=256,
+        dropout=0.5, freeze_bert=False):
+
         super().__init__()
 
         self.bert = AutoModel.from_pretrained(bert_dir)
@@ -148,7 +142,6 @@ class BERTModel(nn.Module):
         return self.regressor(feat)
 
 
-
 def get_model(
     model_type="gnn",
     pretrained_model=None,
@@ -161,8 +154,7 @@ def get_model(
             phys_dim=kwargs.get("phys_dim", 0),
             hidden_dim=kwargs.get("hidden_dim", 256),
             dropout=kwargs.get("dropout", 0.5),
-            freeze_bert=freeze_backbone,
-        )
+            freeze_bert=freeze_backbone)
 
     elif model_type == "gnn":
         model = GNNModel(
@@ -186,3 +178,4 @@ def get_model(
         print(f"[INFO] Loaded pretrained model from {pretrained_model}")
 
     return model
+

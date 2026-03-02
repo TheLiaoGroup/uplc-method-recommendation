@@ -1,5 +1,6 @@
 # 在导入 torch 之前设置 CuBLAS workspace 配置以支持确定性 CuBLAS（如果需要确定性运行）
 import os
+from turtle import hideturtle
 os.environ.setdefault('CUBLAS_WORKSPACE_CONFIG', ':4096:8')
 
 # region 导入模块
@@ -14,7 +15,8 @@ from data_utils import load_and_preprocess_data, clean_data
 from dataset import create_data_loaders
 from models import get_model
 from training import train_model, evaluate_model
-from log_units import plot_training_curves, plot_predictions, save_predictions, save_training_history_and_dataset
+from tools.log_units import save_predictions
+from tools.plot_units import plot_training_curves, plot_predictions
 from config import TASK_CONFIGS
 # endregion
 
@@ -40,9 +42,7 @@ def set_global_seed(seed):
         pass
     print(f"Global seed set to {seed}")
 
-
-def main():
-    # region 解析命令行参数
+def parse_args():
     parser = argparse.ArgumentParser(description='GNN/BERT Retention Time Prediction')
     parser.add_argument('--task', type=str, default='default', help='Task name to use from config.py')
     # 动态补充所有 config 参数
@@ -66,27 +66,17 @@ def main():
             raise ValueError(f"Task configuration '{task_name}' not found in TASK_CONFIGS!")
         specific_cfg = TASK_CONFIGS[task_name]
         task_cfg.update(specific_cfg)
-        print(f"使用任务配置: {task_name} (基于default配置)")
-        print(f"覆盖的参数: {list(specific_cfg.keys())}")
+        print(f"Loaded task configuration: {task_name}")
     else:
-        print("使用默认配置: default")
+        print("Using default task configuration")
+
     # 用最新参数覆盖 args
     for k, v in task_cfg.items():
         setattr(args, k, v)
 
-    # 设置全局随机种子，确保可复现性
-    set_global_seed(args.seed)
+    return args
 
-    # endregion
-
-    # region 环境与目录初始化
-    # 创建结果目录
-    os.makedirs(args.save_dir, exist_ok=True)
-    figs_dir = os.path.join(args.save_dir, 'figs')
-    os.makedirs(figs_dir, exist_ok=True)
-
-    # 选择设备：优先使用 args.gpu（如果在配置/命令行中指定），否则使用第一个可用 GPU（索引 0）
-    selected_gpu = None
+def select_device(gpu_preference=None):
     if torch.cuda.is_available():
         try:
             gpu_count = torch.cuda.device_count()
@@ -98,7 +88,7 @@ def main():
             device = torch.device('cpu')
         else:
             # 如果配置中提供了 gpu 参数，则使用之；否则默认 0
-            cfg_gpu = getattr(args, 'gpu', None)
+            cfg_gpu = gpu_preference
             if cfg_gpu is None:
                 gpu_idx = 0
             else:
@@ -135,7 +125,21 @@ def main():
     else:
         device = torch.device('cpu')
         print("CUDA not available, using CPU")
-    # endregion
+    return device
+
+def main():
+    # 解析参数与设置随机种子
+    args = parse_args()
+
+    # 设置全局随机种子，确保可复现性
+    set_global_seed(args.seed)
+
+    # 创建结果目录
+    os.makedirs(args.save_dir, exist_ok=True)
+    figs_dir = os.path.join(args.save_dir, 'figs')
+    os.makedirs(figs_dir, exist_ok=True)
+
+    device = select_device(gpu_preference=args.gpu)
 
     # region 加载数据
 
@@ -143,7 +147,6 @@ def main():
     print("LOADING DATA")
     print("=" * 50)
 
-    # ---------- 1. Load & clean main dataset ----------
     smiles, retention_times, numerical_features, cluster_ids = \
         load_and_preprocess_data(args.data_path)
 
@@ -151,7 +154,6 @@ def main():
         clean_data(smiles, retention_times, numerical_features, cluster_ids)
 
 
-    # ---------- 2. Case A: independent test set ----------
     if args.test_data_path is not None:
         print(f"Loading training set from: {args.data_path}")
         print(f"Loading independent test set from: {args.test_data_path}")
@@ -171,30 +173,23 @@ def main():
             y=retention_times,
             phys=numerical_features,
             model_type=args.model_type,
-            batch_size=args.batch_size,
-            random_state=args.seed,
-            bert_model_name=args.bert_model_name,
-            max_length=args.max_seq_length,
-            augment=(args.model_type == "bert"))
+            train_ratio=1,
+            shuffle=True,
+            args=args)
 
         _, test_loader, _, test_dataset = create_data_loaders(
             smiles=test_smiles,
             y=test_retention_times,
             phys=test_numerical_features,
             model_type=args.model_type,
-            batch_size=args.batch_size,
+            train_ratio=0,
             shuffle=False,
-            random_state=args.seed,
-            bert_model_name=args.bert_model_name,
-            max_length=args.max_seq_length,
-            augment=False)
+            args=args)
 
         print(
             f"Train set size: {len(train_loader.dataset)}, "
             f"Test set size: {len(test_loader.dataset)}")
 
-
-    # ---------- 3. Case B: split train / test ----------
     else:
         print("No independent test set provided, splitting training data")
 
@@ -204,11 +199,8 @@ def main():
             phys=numerical_features,
             model_type=args.model_type,
             train_ratio=args.train_ratio,
-            batch_size=args.batch_size,
-            random_state=args.seed,
-            bert_model_name=args.bert_model_name,
-            max_length=args.max_seq_length,
-            augment=(args.model_type == "bert"))
+            shuffle=True,
+            args=args)
 
         print(
             f"Train set size: {len(train_loader.dataset)}, "
@@ -224,6 +216,7 @@ def main():
     if args.model_type == 'bert':
         input_dim = None  # BERT不需要input_dim
         phys_dim = getattr(train_dataset, "phys_dim", 0)
+        hidden_dim = args.hidden_dim_bert if hasattr(args, "hidden_dim_bert") else args.hidden_dim
         print(f"Physicochemical feature dimension: {phys_dim}")
 
         if args.use_physicochemical and phys_dim == 0:
@@ -244,8 +237,7 @@ def main():
         gnn_type=args.gnn_type,
         model_type=args.model_type,
         bert_model_name=args.bert_model_name,
-        phys_dim=phys_dim
-    )
+        phys_dim=phys_dim)
 
     model = model.to(device)
     print(f"Model: {model.__class__.__name__}")
@@ -265,12 +257,14 @@ def main():
         model=model,
         train_loader=train_loader,
         val_loader=test_loader,
-        device=device,
         num_epochs=args.num_epochs,
         learning_rate=args.learning_rate,
+        criterion=args.criterion,
+        beta=args.criterion_beta,
+        scheduler=args.scheduler,
         weight_decay=args.weight_decay,
-        save_path=model_save_path
-    )
+        save_path=model_save_path,
+        device=device)
 
     # 可视化与保存结果
     plot_training_curves(
@@ -285,8 +279,7 @@ def main():
         model=model,
         test_loader=test_loader,
         device=device,
-        model_path=model_save_path
-    )
+        model_path=model_save_path)
 
     plot_predictions(
         results,
@@ -300,48 +293,30 @@ def main():
 
     # 保存训练历史和config参数为两个文件
     history = {
-        'final_results': {
+        'results_orig': {
             'mse': results.get('mse_orig', results['mse']),
             'rmse': results.get('rmse_orig', results['rmse']),
             'mae': results.get('mae_orig', results['mae']),
-            'r2': results.get('r2_orig', results['r2'])
-        },
-        'model_config': (
-            {
-                'bert_model_name': args.bert_model_name,
-                'max_seq_length': args.max_seq_length,
-                'dropout': args.dropout,
-                'phys_dim': phys_dim,
-                'freeze_backbone': args.finetune
-            }
-            if args.model_type == 'bert' else
-            {
-                'input_dim': input_dim,
-                'hidden_dim': args.hidden_dim,
-                'num_layers': args.num_layers,
-                'dropout': args.dropout,
-                'gnn_type': args.gnn_type,
-                'seed': args.seed
-            }
-        ),
-        'training_config': {
-            'batch_size': args.batch_size,
-            'num_epochs': args.num_epochs,
-            'learning_rate': args.learning_rate,
-            'weight_decay': args.weight_decay,
-            'train_ratio': args.train_ratio
-        },
-        'dataset_name': os.path.basename(args.data_path),
+            'r2': results.get('r2_orig', results['r2'])},
+        'results': {
+            'mse': results['mse'],
+            'rmse': results['rmse'],
+            'mae': results['mae'],
+            'r2': results['r2']},
         'train_losses': train_losses,
         'val_losses': val_losses
     }
+
     with open(os.path.join(args.save_dir, 'history.json'), 'w') as f:
         import json
         json.dump(history, f, indent=2, ensure_ascii=False)
+
     config_dict = vars(args)
+
     with open(os.path.join(args.save_dir, 'config.json'), 'w') as f:
         import json
         json.dump(config_dict, f, indent=2, ensure_ascii=False)
+
     print(f"\nAll results saved to: {args.save_dir}")
     print("="*50)
     print("TRAINING COMPLETED")

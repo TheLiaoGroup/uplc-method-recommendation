@@ -5,6 +5,57 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import time
 import os
 
+
+
+class WeightedRegressionLoss(torch.nn.Module):
+    def __init__(self, bin_edges, bin_weights, mode="huber", delta=0.05):
+        """
+        bin_edges: shape [num_bins+1]，包含首尾（min/max）
+        bin_weights: shape [num_bins]
+        mode: "mae" | "mse" | "huber"
+        delta: huber 的阈值
+               如果你的 y 是 min-max 到 [0,1]，delta 可先试 0.03~0.08
+               如果 y 是 z-score，delta 可先试 0.5~1.5
+        """
+        super().__init__()
+        self.register_buffer("bin_edges", bin_edges)
+        self.register_buffer("bin_weights", bin_weights)
+        self.mode = mode
+        self.delta = float(delta)
+
+    def _sample_weights(self, target):
+        # target: [B]
+        # bucketize 需要内部边界（不含两端）
+        inner = self.bin_edges[1:-1]
+        bin_ids = torch.bucketize(target, inner, right=False)  # 0..num_bins-1
+        return self.bin_weights[bin_ids]
+
+    def forward(self, pred, target):
+        import torch
+
+        pred = pred.view(-1)
+        target = target.view(-1)
+        w = self._sample_weights(target)
+
+        diff = pred - target
+
+        if self.mode == "mae":
+            loss = torch.abs(diff)
+        elif self.mode == "mse":
+            loss = diff * diff
+        elif self.mode == "huber":
+            abs_diff = torch.abs(diff)
+            d = self.delta
+            quad = torch.minimum(abs_diff, torch.tensor(d, device=abs_diff.device))
+            lin = abs_diff - quad
+            loss = 0.5 * quad * quad + d * lin
+        else:
+            raise ValueError(f"Unknown mode: {self.mode}")
+
+        return (w * loss).mean()
+
+
+
 def forward_and_loss(model, batch, device, criterion=None):
     """
     统一 GNN / BERT 的 forward + loss 计算
@@ -59,23 +110,34 @@ def forward_and_loss(model, batch, device, criterion=None):
     return loss, preds.squeeze(-1), labels.squeeze(-1)
 
 def train_model(
-    model,
-    train_loader,
-    val_loader,
-    device,
-    num_epochs=100,
-    learning_rate=0.001,
-    scheduler=None,
-    weight_decay=1e-4,
-    save_path="best_model.pth",
+    model, train_loader, val_loader,
+    num_epochs=100, learning_rate=0.001,
+    criterion='MSELoss', beta=0.5,
+    scheduler=None, weight_decay=1e-4,
+    save_path="best_model.pth", device=None,
 ):
-    criterion = nn.MSELoss()
+    if criterion == "MSELoss":
+        criterion = nn.MSELoss()
+    elif criterion == "SmoothL1Loss":
+        criterion = nn.SmoothL1Loss(beta=beta)
+    elif criterion == "WeightedHuber":
+        # 从 loader 里拿 dataset
+        dataset = train_loader.dataset
+
+        bin_edges = dataset.bin_edges.to(device)
+        bin_weights = dataset.bin_weights.to(device)
+
+        criterion = WeightedRegressionLoss(
+            bin_edges=bin_edges,
+            bin_weights=bin_weights,
+            mode="huber",
+            delta=1)
+
 
     optimizer = torch.optim.Adam(
         model.parameters(),
         lr=learning_rate,
-        weight_decay=weight_decay
-    )
+        weight_decay=weight_decay)
 
     # ---------- scheduler ----------
     if scheduler == "CosineAnnealingLR":
@@ -89,6 +151,8 @@ def train_model(
     elif scheduler == "OneCycleLR":
         total_steps = len(train_loader) * num_epochs
         scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=learning_rate, total_steps=total_steps)
+    else:
+        scheduler = None
 
     train_losses, val_losses = [], []
     best_val_loss = float("inf")
@@ -230,6 +294,9 @@ def evaluate_model(model, test_loader, device, model_path=None):
                 if batch_labels is not None:
                     batch_labels = batch_labels.to(device)
                     all_targets.extend(batch_labels.cpu().numpy().flatten())
+                
+                if hasattr(batch_inputs, "smiles"):
+                    all_smiles.extend(batch_inputs.smiles)
 
             # ========== GNN ==========
             else:
