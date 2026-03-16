@@ -2,13 +2,6 @@ import os
 import json
 import pandas as pd
 
-
-
-
-
-# 结果总结函数
-
-
 def summarize_results(results_dir_list, output_csv):
     summary_data = []
     for results_dir in results_dir_list:
