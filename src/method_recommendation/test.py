@@ -1,4 +1,3 @@
-# ================= DEPENDENCIES =================
 import os
 import math
 import warnings
@@ -17,7 +16,6 @@ warnings.filterwarnings('ignore')
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
-# ---------- GLOBAL CONFIGURATIONS ----------
 SMARTS_FILE = '../datas/SMARTS/priority_fgs_823_newnew.txt'
 
 FEATURE_COLS = ['MolWt', 'logP', 'TPSA', 'H_bond_donors', 'H_bond_acceptors']
@@ -25,7 +23,8 @@ FP_COLS = [f'col{i}' for i in range(823)]
 MG_COLS = [f'fp_{i}' for i in range(1024)]
 ALL_FEATURES = FEATURE_COLS + FP_COLS + MG_COLS
 
-# ---------- FIXED METHOD ORDER ----------
+
+
 FIXED_METHOD_ORDER = [
     'AM-I', 
     'AM-II', 
