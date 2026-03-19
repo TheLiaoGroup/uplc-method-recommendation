@@ -22,7 +22,7 @@ from .tools.log_unit import save_predictions
 from .tools.plot_unit import plot_training_curves, plot_predictions
 
 
-from config.train_task import TASK_CONFIGS
+from .train_task import TASK_CONFIGS
 # endregion
 
 warnings.filterwarnings('ignore')

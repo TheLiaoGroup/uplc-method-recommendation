@@ -1,0 +1,13 @@
+{
+  "experiment_id": "AM-I-filtered_with_labels_k4_20260319_164442_42",
+  "rmse": 4.189438550749371,
+  "r2": 0.9009717795572397,
+  "mae": 3.2083895911120384,
+  "n_train": 6018,
+  "n_test": 670,
+  "n_features": 1852,
+  "data_hash": "66c37777f1532f8a",
+  "temp_models_count": 150,
+  "final_model_trained": true,
+  "seed": 42
+}

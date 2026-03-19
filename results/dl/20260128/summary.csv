@@ -1,0 +1,2 @@
+dataset, model, R2, RMSE, MAE
+AM-I,GNN,0.872,0.543,0.412
