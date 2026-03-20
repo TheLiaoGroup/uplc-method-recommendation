@@ -1043,7 +1043,7 @@ def main():
     
     # Configure file paths
     reaction_data_dir = "../../data/reaction"
-    output_dir = "../../results/method-recommendation/Exp-Reaction-data-results"
+    output_dir = "../../results/method_recommendation/Exp-Reaction"
     
 
     if not os.path.exists(reaction_data_dir):

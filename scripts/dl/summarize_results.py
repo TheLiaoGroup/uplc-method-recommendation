@@ -53,6 +53,6 @@ def summarize_results(results_dir_list, output_csv):
 
 
 if __name__ == "__main__":
-    results_dirs = ["/home/huangzy/uplc-method-recommendation/results/20260212"]
+    results_dirs = ["/home/huangzy/uplc-method-recommendation/results/dl/20260212"]
     output_csv = "/home/huangzy/uplc-method-recommendation/results/20260212/summary.csv"
     summarize_results(results_dirs, output_csv)

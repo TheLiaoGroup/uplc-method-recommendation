@@ -1,0 +1,2 @@
+total_rows,rows_with_prediction,avg_pred_score,pred_score_distribution,method_recommendation_distribution,method_recommendation_percentage
+500,500,0.9932747691666591,"{'excellent(0.9-1.0)': np.int64(489), 'good(0.7-0.9)': np.int64(11), 'fair(0.5-0.7)': np.int64(0), 'poor(<0.5)': np.int64(0), 'penalty(-1)': np.int64(0)}","{'AM-I': 290, 'AM-II': 44, 'AM-IV': 23, 'AM-III': 199, 'AM-VI': 141, 'AM-V': 15}","{'AM-I': 57.99999999999999, 'AM-II': 8.799999999999999, 'AM-IV': 4.6, 'AM-III': 39.800000000000004, 'AM-VI': 28.199999999999996, 'AM-V': 3.0}"

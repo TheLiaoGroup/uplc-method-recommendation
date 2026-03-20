@@ -1,0 +1,24 @@
+Surrogate Model Fidelity Report: AM-I-filtered_with_labels_k4
+==================================================
+
+Training Set Performance:
+  R²: 0.988668
+  RMSE: 1.406142
+  MAE: 1.064113
+
+Test Set Performance:
+  R²: 0.959507
+  RMSE: 2.547664
+  MAE: 1.963646
+
+Top 10 Features by Mean Absolute SHAP:
+  1. logP: 5.152167
+  2. H_bond_donors: 2.047390
+  3. fp_842: 1.580763
+  4. MolWt: 1.237355
+  5. col350: 0.787465
+  6. fp_707: 0.781812
+  7. fp_579: 0.772671
+  8. TPSA: 0.683977
+  9. col808: 0.637228
+  10. fp_145: 0.613520
