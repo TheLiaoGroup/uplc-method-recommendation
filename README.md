@@ -4,9 +4,9 @@ A research codebase for the manuscript **“An Intelligent Data-Driven Framework
 
 This repository contains:
 
-- **Method-aware retention time (RT) prediction** models for **6 UPLC methods (AM-I … AM-VI)**.
-- A **reaction-level scoring** layer that converts predicted RTs of *all reaction components* into **UPLC method recommendations** under retention-range and peak-separation constraints.
-- Reproducible notebooks/scripts for feature generation, data splitting, model training/evaluation, similarity analysis, and an API-style demo service.
+* **Method-aware retention time (RT) prediction** workflows for multiple UPLC methods;
+* a **reaction-level scoring and ranking** pipeline for UPLC method recommendation;
+* reproducible scripts and package modules for preprocessing, model training/evaluation, similarity analysis, and method recommendation.
 
 ---
 
@@ -14,174 +14,194 @@ This repository contains:
 
 ### RT prediction (molecule-level, method-aware)
 
-For each UPLC method (AM-I … AM-VI), a dedicated RT predictor is trained under a fixed chromatographic context (method-specific modeling). The repo includes:
+For each UPLC method, the project supports retention time prediction under a fixed chromatographic context (method-specific modeling).
 
-- Raw RT datasets (`datas/0.data/*.csv`)
-- Processed feature tables with descriptors + fingerprints (`datas/processed_results/*`)
-- Train/test split tables for major datasets (`datas/1-train_test_split/*`)
-- Traditional ML (SVR / LightGBM / XGBoost / RF) notebooks + trained artifacts (`ml/`)
-- Optional deep learning baselines (GIN, ChemBERTa-style) (`gnn_bert/`)
+The current repository includes:
+
+* raw RT-related datasets under `data/raw/`;
+* processed feature tables and intermediate datasets under `data/processed/`;
+* train/test split tables under `data/train_test_split/`;
+* reaction-level input data under `data/reaction/`;
+* SMARTS-related definitions/features under `data/smarts/`;
+* traditional ML code under `src/ml/` and `scripts/ml/`;
+* deep learning code under `src/gnn_bert/` and `scripts/dl/`;
+* similarity analysis code under `src/similarity_analysis/`;
+* method recommendation code under `src/method_recommendation/` and `scripts/method-recommendation/`.
 
 ### Method recommendation (reaction-level scoring)
 
-Given a reaction system (≥2 components, ordered by importance, e.g., **P > substrates > by-products**), we:
+Given a reaction system with multiple components, the workflow predicts the RT of each component under candidate UPLC methods, then scores and ranks these methods according to downstream separation-oriented criteria.
 
-1) predict each component’s RT under each UPLC method
-2) score each method using:
-   - **Retention range feasibility** (default [30,120] s; AM-III/AM-IV use [30,150] s; AM-V use [30,210] s)
-   - **Pairwise separation threshold** (ΔRTmin = 10 s)
-   - importance-weighted penalties + (optional) veto logic  
+Typical considerations include:
 
-The output is a ranked list of candidate UPLC methods + a visualization comparing methods.
+1. whether predicted RTs fall into a usable retention window;
+2. whether components are sufficiently separated from each other;
+3. whether reaction-level priorities can be reflected in scoring.
+
+The output is a ranked list of candidate UPLC methods, together with result files and analysis outputs.
 
 ---
 
 ## 2) Repository structure
 
-```
+```text
 .
-├── datas/
-│   ├── 0.data/                 # raw RT datasets (AM-I ... AM-VII)
-│   ├── processed_results/    # descriptor + FG + MorganFP features
-│   └── 1-train_test_split/     # train/test split with PCA/UMAP clusters (for large sets)
+├── data/
+│   ├── processed/              # processed feature tables and intermediate datasets
+│   ├── raw/                    # raw source datasets
+│   ├── reaction/               # reaction-level input tables
+│   ├── smarts/                 # SMARTS patterns or related feature definitions
+│   └── train_test_split/       # prepared train/test split datasets
 │
-├── ml/
-│   ├── 1-0-feature.ipynb         # feature generation (descriptors + FG bits + MorganFP)
-│   ├── 1-1-PCA-comparison        # chemical space comparison
-│   ├── 1-2-clustering.ipynb      # PCA/UMAP clustering for split
-│   ├── 1-3-data-split.ipynb      # cluster-aware train/test split (major datasets)
-│   ├── 2-svr.ipynb / 2-lgb.ipynb / 2-xgb.ipynb / 2-RF.ipynb
-│   ├── 2-lgb-TL.ipynb          # transfer learning exploration (tabular)
-│   ├── 3-shapanalysis.ipynb
-│   ├── 3-similarity-analysis.ipynb
-│   ├── 4-Exp-validation.ipynb  # score for both experiments and recommendation
-│   ├── 4-Method-recommendation.ipynb  # predict + score + plot
-│   ├── processed_results/      # (mirror) processed tables
-│   ├── 1-train_test_split/       # (mirror) split tables
-│   ├── 2-svr-models/             # trained SVR artifacts (AM-I/II/III)
-│   ├── 2-lgb-models/             # trained LightGBM artifacts
-│   └── 2-svr-model-other4/       # nested-CV SVR artifacts (AM-IV/V/VI/VII)
+├── results/
+│   ├── dl/                     # deep learning outputs
+│   ├── method_recommendation/  # method recommendation outputs
+│   ├── ml/                     # traditional ML outputs
+│   └── preprocessing/          # preprocessing outputs
 │
-├── gnn_bert/
-│   └── src/                    # GNN/BERT RT prediction (optional, requires torch-geometric)
+├── scripts/
+│   ├── dl/                     # runnable scripts for deep learning workflows
+│   ├── method-recommendation/  # runnable scripts for method recommendation
+│   ├── ml/                     # runnable scripts for traditional ML workflows
+│   └── preprocessing/          # runnable scripts for preprocessing
 │
-└── results/
-    └── GIN-AM-I / GIN-AM-II     # example deep learning outputs
+├── src/
+│   ├── gnn_bert/               # deep learning package
+│   ├── method_recommendation/  # recommendation package
+│   ├── ml/                     # traditional ML package
+│   ├── similarity_analysis/    # similarity analysis package
+│   └── __init__.py
+│
+├── environment_dl.yml          # conda environment for deep learning workflows
+├── environment_ml.yml          # conda environment for ML workflows
+├── setup.py                    # package installation config
+├── LICENSE
+└── README.md
 ```
+
+> Note:
+> The current repository is organized around `data/`, `results/`, `scripts/`, and `src/`.
+> Older descriptions based on paths such as `datas/`, top-level `ml/`, or top-level `gnn_bert/` are no longer accurate for the current version of the repository.
 
 ---
 
 ## 3) Data format
 
-### Raw RT tables (`datas/0.data/AM-*.csv`)
+### Raw RT tables (`data/raw/`)
 
-Minimal schema:
+Raw source data are stored under `data/raw/`.
 
-- `SMILES`: canonical/standardized smiles
-- `UV_RT-s`: retention time in seconds
-- `Method`: one of `AM-I ... AM-VI`
+At minimum, RT prediction datasets are expected to contain fields equivalent to:
 
-### Processed feature tables (`datas/processed_results/*-filtered.csv`)
+* molecular structure information (for example, SMILES);
+* retention time labels;
+* method identifiers when multiple chromatographic methods are involved.
 
-Includes:
+### Processed feature tables (`data/processed/`)
 
-- 5 physicochemical descriptors: `MolWt, logP, TPSA, H_bond_donors, H_bond_acceptors`
-- 823 functional-group (SMARTS) bits: `col0 ... col822`
-- 1024-bit Morgan fingerprint: `fp_0 ... fp_1023`
+Processed datasets are stored under `data/processed/`.
 
-### Split tables (`datas/1-train_test_split/*_train.csv` / `*_test.csv`)
+Depending on the workflow, these tables may include:
 
-Same as processed tables, plus:
+* physicochemical descriptors;
+* SMARTS / functional-group related features;
+* fingerprint-based molecular representations;
+* cleaned labels and intermediate columns used for model training.
 
-- `PCA_Cluster`, `UMAP_Cluster` (used for cluster-aware splitting)
+### Split tables (`data/train_test_split/`)
+
+Prepared train/test split files are stored under `data/train_test_split/`.
+
+These are used for reproducible model development and evaluation.
+
+### Reaction-level input tables (`data/reaction/`)
+
+Reaction-level inputs used by the recommendation workflow are stored under `data/reaction/`.
+
+These files are typically used to aggregate multiple reaction components and evaluate candidate UPLC methods at the system level rather than the single-molecule level.
 
 ---
 
 ## 4) Installation
 
-> Recommended: **conda** for RDKit.
+> Recommended: use **conda**, especially for RDKit-related workflows.
 
-### 4.1 Minimal environment (traditional ML + scoring API)
+### 4.1 Create environment from the provided files
 
-```bash
-conda create -n uplc-rec python=3.10 -y
-conda activate uplc-rec
-
-# RDKit
-conda install -c conda-forge rdkit -y
-
-# core python deps
-pip install -U numpy pandas scikit-learn joblib matplotlib lightgbm xgboost chardet
-
-# API demo
-pip install -U fastapi "uvicorn[standard]" pydantic
-```
-
-### 4.2 Optional: deep learning (GNN/BERT)
-
-`gnn_bert/src` uses **PyTorch**, **torch-geometric**, and **transformers**.
-Install varies by CUDA/CPU. A typical CPU-only setup:
+For traditional ML workflows:
 
 ```bash
-pip install -U torch torchvision torchaudio
-pip install -U transformers loguru
-
-# torch-geometric (choose the right wheel for your torch version)
-# see official instructions: https://pytorch-geometric.readthedocs.io/
-pip install -U torch-geometric
+conda env create -f environment_ml.yml
+conda activate <your-ml-env>
 ```
+
+For deep learning workflows:
+
+```bash
+conda env create -f environment_dl.yml
+conda activate <your-dl-env>
+```
+
+### 4.2 Install the package in editable mode
+
+After creating and activating the environment:
+
+```bash
+pip install -e .
+```
+
+This allows you to import modules directly from `src/` during development.
 
 ---
 
 ## 5) Quick start
 
-### 5.1 Run the method recommendation demo API (FastAPI)
+### 5.1 Prepare data
 
-The API script is: `ml/7.Method-for-seperation.py`
+Place or organize the required datasets under the corresponding directories in `data/`:
 
-```bash
-cd ml
-uvicorn "7.Method-for-seperation:app" --host 0.0.0.0 --port 8000
-```
+* `data/raw/`
+* `data/processed/`
+* `data/train_test_split/`
+* `data/reaction/`
+* `data/smarts/`
 
-Test with curl:
+### 5.2 Run preprocessing workflows
 
-```bash
-curl -X POST "http://127.0.0.1:8000/predict"   -H "Content-Type: application/json"   -d '{
-    "smiles_list": [
-      "CC1=CC=C(C=C1)N", 
-      "O=C(O)C1=CC=CC=C1",
-      "O=C(NC1=CC=C(C=C1)N)C2=CC=CC=C2"
-    ]
-  }'
-```
+Use scripts under `scripts/preprocessing/` to prepare features, intermediate tables, or other preprocessing outputs.
 
-Expected response includes:
+### 5.3 Run model training / evaluation
 
-- recommended UPLC method (ranked)
-- per-method scores
-- a base64-encoded PNG plot comparing RTs/scores across methods
+Use:
 
-> Note: `smiles_list` should be ordered by importance (highest → lowest).  
-> Example: `[Product, Substrate1, Substrate2, Byproduct...]`
+* `scripts/ml/` for traditional machine learning workflows;
+* `scripts/dl/` for deep learning workflows.
 
-### 5.2 Reproduce the classical ML pipeline (notebooks)
+Core implementation code is available in:
 
-Open notebooks under `ml/` in order:
+* `src/ml/`
+* `src/gnn_bert/`
 
-1) `1-0-feature.ipynb` → generate processed feature tables  
-2) `1-2-clustering.ipynb` + `1-3-data-split.ipynb` → cluster-aware split  
-3) `2-svr.ipynb`, `2-lgb.ipynb`, `2-xgb.ipynb`, `2-RF.ipynb` → model training/eval  
-4) `3-similarity-analysis.ipynb` → similarity-stratified evaluation
+### 5.4 Run similarity analysis
+
+Use the similarity analysis module in `src/similarity_analysis/` when chemical-space comparison or similarity-based evaluation is needed.
+
+### 5.5 Run method recommendation
+
+Use scripts under `scripts/method-recommendation/` together with the package code in `src/method_recommendation/` to generate reaction-level UPLC method recommendations.
+
+Outputs are written to `results/method_recommendation/`.
 
 ---
 
-## 6) Notes on scoring rules (defaults)
+## 6) Notes
 
-Current implementation uses:
+* `data/` stores inputs and prepared datasets.
+* `results/` stores generated outputs.
+* `scripts/` contains runnable entry points grouped by workflow.
+* `src/` contains the main reusable Python package code.
 
-- retention range: **[30,120] s** for AM-I/II/V/VI; **[30,150] s** for AM-III/IV; **[30,210] s** for AM-V  
-- minimum separation: **ΔRTmin = 10 s**
+In short: inputs go into `data/`, implementation lives in `src/`, runnable workflow entry points live in `scripts/`, and outputs belong in `results/`.
 
 ---
 
@@ -189,7 +209,4 @@ Current implementation uses:
 
 **Manuscript:** *An Intelligent Data-Driven Framework for UPLC Method Recommendation in High-Throughput Reaction Analysis* (in preparation; not yet submitted).
 
-If you use this repository in academic work, please cite the manuscript (details TBD).
-
-
----
+If you use this repository in academic work, please cite the corresponding manuscript once the formal paper information is available.
