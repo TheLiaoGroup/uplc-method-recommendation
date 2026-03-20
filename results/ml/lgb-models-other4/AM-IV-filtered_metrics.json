@@ -1,0 +1,223 @@
+{
+  "dataset": "AM-IV-filtered",
+  "base_name": "AM-IV-filtered",
+  "target": "UV_RT-s",
+  "global_seed": 42,
+  "nested_cv": {
+    "outer_5fold_metrics": {
+      "per_fold": [
+        {
+          "fold": 1,
+          "rmse": 4.734513383085935,
+          "r2": 0.8262467702500511,
+          "mae": 3.165325754485891,
+          "mape": 5.489044179892152,
+          "pearson_corr": 0.9140432757934975,
+          "n_samples": 66
+        },
+        {
+          "fold": 2,
+          "rmse": 5.007692654168641,
+          "r2": 0.684829310118757,
+          "mae": 3.5850422742872916,
+          "mape": 6.072305225394803,
+          "pearson_corr": 0.8460661698329052,
+          "n_samples": 66
+        },
+        {
+          "fold": 3,
+          "rmse": 5.574123094572697,
+          "r2": 0.6809487218602726,
+          "mae": 4.296243062720538,
+          "mape": 7.520570257860482,
+          "pearson_corr": 0.8262172160007039,
+          "n_samples": 66
+        },
+        {
+          "fold": 4,
+          "rmse": 5.100959943965208,
+          "r2": 0.7991449500131138,
+          "mae": 3.832460997907732,
+          "mape": 6.9990694360716255,
+          "pearson_corr": 0.9076955691680498,
+          "n_samples": 66
+        },
+        {
+          "fold": 5,
+          "rmse": 5.746031902224755,
+          "r2": 0.6707880650054725,
+          "mae": 3.9228492129921104,
+          "mape": 6.580880369383538,
+          "pearson_corr": 0.8221363376971028,
+          "n_samples": 66
+        }
+      ],
+      "summary": {
+        "rmse": {
+          "mean": 5.232664195603447,
+          "std": 0.417208886007331,
+          "values": [
+            4.734513383085935,
+            5.007692654168641,
+            5.574123094572697,
+            5.100959943965208,
+            5.746031902224755
+          ]
+        },
+        "r2": {
+          "mean": 0.7323915634495333,
+          "std": 0.07410860168445511,
+          "values": [
+            0.8262467702500511,
+            0.684829310118757,
+            0.6809487218602726,
+            0.7991449500131138,
+            0.6707880650054725
+          ]
+        },
+        "mae": {
+          "mean": 3.7603842604787125,
+          "std": 0.41939659347972696,
+          "values": [
+            3.165325754485891,
+            3.5850422742872916,
+            4.296243062720538,
+            3.832460997907732,
+            3.9228492129921104
+          ]
+        },
+        "mape": {
+          "mean": 6.53237389372052,
+          "std": 0.7900774855770892,
+          "values": [
+            5.489044179892152,
+            6.072305225394803,
+            7.520570257860482,
+            6.9990694360716255,
+            6.580880369383538
+          ]
+        },
+        "pearson_corr": {
+          "mean": 0.8632317136984519,
+          "std": 0.04447585904304951,
+          "values": [
+            0.9140432757934975,
+            0.8460661698329052,
+            0.8262172160007039,
+            0.9076955691680498,
+            0.8221363376971028
+          ]
+        }
+      },
+      "total_seed": 42
+    },
+    "best_params_per_outer_fold": [
+      {
+        "n_estimators": 1422,
+        "max_depth": 11,
+        "learning_rate": 0.022243165993730534,
+        "subsample": 0.852112902928859,
+        "colsample_bytree": 0.6216119354791717,
+        "lambda_l1": 0.0007409183028091225,
+        "lambda_l2": 0.0002421188761243007,
+        "random_state": 1042,
+        "n_jobs": 1,
+        "deterministic": true,
+        "force_col_wise": true,
+        "verbose": -1
+      },
+      {
+        "n_estimators": 739,
+        "max_depth": 12,
+        "learning_rate": 0.28577394175674625,
+        "subsample": 0.6821848509527666,
+        "colsample_bytree": 0.9960430233313132,
+        "lambda_l1": 0.000560998443384813,
+        "lambda_l2": 0.09140310823124859,
+        "random_state": 2042,
+        "n_jobs": 1,
+        "deterministic": true,
+        "force_col_wise": true,
+        "verbose": -1
+      },
+      {
+        "n_estimators": 1470,
+        "max_depth": 15,
+        "learning_rate": 0.006722401028250099,
+        "subsample": 0.6012931631587364,
+        "colsample_bytree": 0.6030850821573323,
+        "lambda_l1": 0.00565401656750009,
+        "lambda_l2": 0.00013438211570403866,
+        "random_state": 3042,
+        "n_jobs": 1,
+        "deterministic": true,
+        "force_col_wise": true,
+        "verbose": -1
+      },
+      {
+        "n_estimators": 384,
+        "max_depth": 10,
+        "learning_rate": 0.13556534317874325,
+        "subsample": 0.9402760326424123,
+        "colsample_bytree": 0.8591224567666524,
+        "lambda_l1": 0.00882794424661858,
+        "lambda_l2": 0.6662148819277733,
+        "random_state": 4042,
+        "n_jobs": 1,
+        "deterministic": true,
+        "force_col_wise": true,
+        "verbose": -1
+      },
+      {
+        "n_estimators": 741,
+        "max_depth": 3,
+        "learning_rate": 0.09568853700329727,
+        "subsample": 0.920124237619215,
+        "colsample_bytree": 0.6033575887768994,
+        "lambda_l1": 0.11046351625896805,
+        "lambda_l2": 8.505510479516898,
+        "random_state": 5042,
+        "n_jobs": 1,
+        "deterministic": true,
+        "force_col_wise": true,
+        "verbose": -1
+      }
+    ],
+    "outer_cv_performance_summary": {
+      "r2_mean": 0.7323915634495333,
+      "r2_std": 0.07410860168445511,
+      "mae_mean": 3.7603842604787125,
+      "mae_std": 0.41939659347972696,
+      "rmse_mean": 5.232664195603447,
+      "rmse_std": 0.417208886007331,
+      "pearson_corr_mean": 0.8632317136984519,
+      "pearson_corr_std": 0.04447585904304951
+    }
+  },
+  "final_selection_on_full_data": {
+    "best_params": {
+      "n_estimators": 1234,
+      "max_depth": 11,
+      "learning_rate": 0.03748303967813435,
+      "subsample": 0.8061862149558355,
+      "colsample_bytree": 0.6332232699551984,
+      "lambda_l1": 0.0742017808860417,
+      "lambda_l2": 0.246225650679108,
+      "random_state": 10041,
+      "n_jobs": 1,
+      "deterministic": true,
+      "force_col_wise": true,
+      "verbose": -1
+    },
+    "inner_cv_rmse_mean": 5.642613088656078,
+    "n_trials": 50,
+    "full_data_seed": 10041
+  },
+  "performance_summary_formatted": {
+    "rmse": "5.2327 ± 0.4172",
+    "r2": "0.7324 ± 0.0741",
+    "mae": "3.7604 ± 0.4194",
+    "pearson_corr": "0.8632 ± 0.0445"
+  },
+  "notes": "Deterministic training with SEED=42. Performance metrics are based on Outer 5-fold CV mean±std."
+}

@@ -1,0 +1,12 @@
+{
+  "best_params": {
+    "n_estimators": 241,
+    "max_depth": 43,
+    "min_samples_split": 4,
+    "min_samples_leaf": 1,
+    "max_features": "sqrt",
+    "bootstrap": false
+  },
+  "best_value": 0.7600639656243496,
+  "n_trials": 30
+}

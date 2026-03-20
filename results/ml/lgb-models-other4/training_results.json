@@ -1,0 +1,98 @@
+[
+  {
+    "dataset": "AM-III-filtered",
+    "base_name": "AM-III-filtered",
+    "status": "ok",
+    "global_seed": 42,
+    "rmse_mean": 4.450102305536069,
+    "rmse_std": 0.9785906675096514,
+    "r2_mean": 0.8764784688057532,
+    "r2_std": 0.045263337911992114,
+    "mae_mean": 2.8615300325529693,
+    "mae_std": 0.4893290652307254,
+    "pearson_mean": 0.9370821576671957,
+    "pearson_std": 0.02451843871817429,
+    "outer_oof_r2": 0.8759968191688006,
+    "outer_oof_mae": 2.861487664250943,
+    "outer_oof_rmse": 4.5360356624311695,
+    "performance_summary": {
+      "rmse": "4.4501 ± 0.9786",
+      "r2": "0.8765 ± 0.0453",
+      "mae": "2.8615 ± 0.4893",
+      "pearson_corr": "0.9371 ± 0.0245"
+    },
+    "full_data_seed": 10041
+  },
+  {
+    "dataset": "AM-IV-filtered",
+    "base_name": "AM-IV-filtered",
+    "status": "ok",
+    "global_seed": 42,
+    "rmse_mean": 5.232664195603447,
+    "rmse_std": 0.417208886007331,
+    "r2_mean": 0.7323915634495333,
+    "r2_std": 0.07410860168445511,
+    "mae_mean": 3.7603842604787125,
+    "mae_std": 0.41939659347972696,
+    "pearson_mean": 0.8632317136984519,
+    "pearson_std": 0.04447585904304951,
+    "outer_oof_r2": 0.7433346437931496,
+    "outer_oof_mae": 3.7603842604787125,
+    "outer_oof_rmse": 5.245953220111771,
+    "performance_summary": {
+      "rmse": "5.2327 ± 0.4172",
+      "r2": "0.7324 ± 0.0741",
+      "mae": "3.7604 ± 0.4194",
+      "pearson_corr": "0.8632 ± 0.0445"
+    },
+    "full_data_seed": 10041
+  },
+  {
+    "dataset": "AM-V-filtered",
+    "base_name": "AM-V-filtered",
+    "status": "ok",
+    "global_seed": 42,
+    "rmse_mean": 2.949817024600054,
+    "rmse_std": 0.27150681493558676,
+    "r2_mean": 0.831178572188945,
+    "r2_std": 0.02985166975196398,
+    "mae_mean": 2.230366569284873,
+    "mae_std": 0.15423305644842655,
+    "pearson_mean": 0.9156549572774892,
+    "pearson_std": 0.012483692430832754,
+    "outer_oof_r2": 0.8335655219345468,
+    "outer_oof_mae": 2.2303074302351873,
+    "outer_oof_rmse": 2.959323799116531,
+    "performance_summary": {
+      "rmse": "2.9498 ± 0.2715",
+      "r2": "0.8312 ± 0.0299",
+      "mae": "2.2304 ± 0.1542",
+      "pearson_corr": "0.9157 ± 0.0125"
+    },
+    "full_data_seed": 10041
+  },
+  {
+    "dataset": "AM-VI-filtered",
+    "base_name": "AM-VI-filtered",
+    "status": "ok",
+    "global_seed": 42,
+    "rmse_mean": 8.544551344805834,
+    "rmse_std": 1.1871013048561025,
+    "r2_mean": 0.7676826819571918,
+    "r2_std": 0.08594714784756244,
+    "mae_mean": 5.92197558172897,
+    "mae_std": 1.2247788546950928,
+    "pearson_mean": 0.9048287060210722,
+    "pearson_std": 0.04252630293131738,
+    "outer_oof_r2": 0.7823196715884922,
+    "outer_oof_mae": 5.917028958693191,
+    "outer_oof_rmse": 8.603347075061054,
+    "performance_summary": {
+      "rmse": "8.5446 ± 1.1871",
+      "r2": "0.7677 ± 0.0859",
+      "mae": "5.9220 ± 1.2248",
+      "pearson_corr": "0.9048 ± 0.0425"
+    },
+    "full_data_seed": 10041
+  }
+]

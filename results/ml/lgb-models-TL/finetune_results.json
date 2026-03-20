@@ -1,0 +1,49 @@
+[
+    {
+        "tag": "AM-II-filtered_with_labels_k4",
+        "status": "ok",
+        "metrics": {
+            "finetuned": {
+                "rmse": 3.986201090593989,
+                "r2": 0.8140694414734659,
+                "mae": 3.017653062991859
+            },
+            "scratch": {
+                "rmse": 3.678754970037017,
+                "r2": 0.8416441578159123,
+                "mae": 2.5414438016165195
+            },
+            "best_params": {
+                "boosting_type": "gbdt",
+                "class_weight": null,
+                "colsample_bytree": 0.6631010417293977,
+                "importance_type": "split",
+                "learning_rate": 0.06319285304208215,
+                "max_depth": 10,
+                "min_child_samples": 10,
+                "min_child_weight": 0.001,
+                "min_split_gain": 0.0,
+                "num_leaves": 18,
+                "objective": null,
+                "reg_alpha": 0.0,
+                "reg_lambda": 0.0,
+                "subsample": 0.6627364708298777,
+                "subsample_for_bin": 200000,
+                "subsample_freq": 0,
+                "lambda_l1": 0.006424020374683241,
+                "lambda_l2": 0.12209534237482253,
+                "verbosity": -1,
+                "deterministic": true,
+                "random_state": 42,
+                "data_random_seed": 42,
+                "feature_fraction_seed": 42,
+                "bagging_seed": 42,
+                "drop_seed": 42,
+                "force_row_wise": true,
+                "n_jobs": 20
+            }
+        },
+        "fine_model_path": "../../results/ml/lgb-models-TL/AM-II-filtered_with_labels_k4/AM-II-filtered_with_labels_k4_finetuned_model.joblib",
+        "scratch_model_path": "../../results/ml/lgb-models-TL/AM-II-filtered_with_labels_k4/AM-II-filtered_with_labels_k4_scratch_model.joblib"
+    }
+]

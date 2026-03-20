@@ -1,0 +1,63 @@
+{
+    "dataset": "AM-III-filtered",
+    "data_shape": [
+        529,
+        1855
+    ],
+    "features_used": 1852,
+    "pretrain_trees": 971,
+    "new_trees_added": 20,
+    "total_trees": 991,
+    "outer_cv_metrics": {
+        "RMSE": [
+            4.070306513664564,
+            0.9447668737290023
+        ],
+        "R2": [
+            0.8940354231555379,
+            0.0430580174499856
+        ],
+        "MAE": [
+            2.7878086643148428,
+            0.39976672782528866
+        ],
+        "Overall_R2_direct": 0.8923114656813654,
+        "Overall_MAE_direct": 2.788546990785069,
+        "Overall_R2": 0.8923114656813654,
+        "Overall_MAE": 2.788546990785069
+    },
+    "outer_cv_fold_performance": {
+        "RMSE": [
+            3.434758617049802,
+            4.159924530246906,
+            5.860561589827787,
+            3.637595592946702,
+            3.258692238251623
+        ],
+        "R2": [
+            0.9345050726407197,
+            0.8898715409402557,
+            0.8142629162984641,
+            0.9033893278227829,
+            0.9281482580754667
+        ],
+        "MAE": [
+            2.5304178718299353,
+            2.6033526656172574,
+            3.520074610305801,
+            2.887964212255773,
+            2.397233961565447
+        ]
+    },
+    "best_params": {
+        "learning_rate": 0.022918660029681973,
+        "num_leaves": 30,
+        "max_depth": 3,
+        "min_child_samples": 7,
+        "subsample": 0.8041817028811491,
+        "colsample_bytree": 0.6157109327281354
+    },
+    "predictions_saved": "../../results/ml/lgb-TL-models-other4/AM-III-filtered/outer_cv_predictions/AM-III-filtered_outer_cv_predictions.csv",
+    "model_saved": "../../results/ml/lgb-TL-models-other4/AM-III-filtered/AM-III-filtered_final_model.joblib",
+    "overall_samples": 529
+}

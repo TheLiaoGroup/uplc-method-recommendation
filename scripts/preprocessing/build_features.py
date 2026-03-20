@@ -8,6 +8,7 @@ import chardet
 import os
 import warnings
 from pathlib import Path
+from tqdm import tqdm
 
 warnings.filterwarnings('ignore')
 RDLogger.DisableLog("rdApp.warning")
@@ -254,7 +255,8 @@ def process_csv_file(file_path: str) -> bool:
         valid_indices = []
         error_count = 0
         
-        for idx, row in df.iterrows():
+
+        for idx, row in tqdm(df.iterrows(), total=len(df)):
             smiles = row[smiles_col]
             features = calc_features(smiles)
             if features is not None:
@@ -364,6 +366,7 @@ def main():
     # Process each CSV file
     for file_name in csv_files:
         file_path = str(INPUT_RAW_DIR / file_name)
+        print(file_path)
         
         if process_csv_file(file_path):
             success_count += 1

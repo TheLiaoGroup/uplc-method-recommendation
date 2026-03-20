@@ -1,0 +1,32 @@
+[
+  {
+    "Dataset": "AM-I-filtered_with_labels_k4",
+    "Train_Samples": 6018,
+    "Test_Samples": 670,
+    "Train_R2": 0.9877615263684311,
+    "Train_MAE": 1.1507692333307002,
+    "Test_R2": 0.7922264924582394,
+    "Test_MAE": 4.732056196478551,
+    "Test_MSE": 37.822400391825205,
+    "Test_RMSE": 6.149991901769075,
+    "Best_n_estimators": 241,
+    "Best_max_depth": 43,
+    "Dataset_Directory": "../../results/ml/RF-models/AM-I-filtered_with_labels_k4",
+    "Model_File": "random_forest_model.pkl"
+  },
+  {
+    "Dataset": "AM-II-filtered_with_labels_k4",
+    "Train_Samples": 1650,
+    "Test_Samples": 186,
+    "Train_R2": 0.9496882873714667,
+    "Train_MAE": 1.541488419726471,
+    "Test_R2": 0.71188826577047,
+    "Test_MAE": 3.484406792202472,
+    "Test_MSE": 24.6222978165816,
+    "Test_RMSE": 4.962086034782307,
+    "Best_n_estimators": 151,
+    "Best_max_depth": 32,
+    "Dataset_Directory": "../../results/ml/RF-models/AM-II-filtered_with_labels_k4",
+    "Model_File": "random_forest_model.pkl"
+  }
+]
